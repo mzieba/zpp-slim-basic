@@ -68,6 +68,22 @@ $app
 )->name('hello'); // nazwa naszej drogi ;-)
 
 
+$app->get('/faker', function () {
+    $fakerFactory = new Faker\Factory();
+    $generator = $fakerFactory->create('pl_PL');
+    
+    $users = [];
+    for ($i=0; $i<10; ++$i) {
+        $users[] = array(
+            'name' => $generator->name
+        );
+    }
+    
+    var_dump($users);
+});
+
+
+
 $app->run();
 
 
