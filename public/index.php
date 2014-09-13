@@ -1,14 +1,12 @@
 <?php
 
-// mysql: homestead/secret
-// 
-
-// 0. slim
-// 1. logowanie
+// kroki, jakie podejmiemy tworząc naszą aplikację
+// 0. konfiguracja slim
+// 1. obsługa logowania
 // 2. obsługa sesji
 // 3. połączenie z BD (mysql)
 // 4. widoki
-// 5. prosta aplikacja (routing, generowanie linków)
+// 5. prosta aplikacja (z faker)
 
 // ustalamy, że katalogiem głównym jest katalog projektu
 chdir('../');
@@ -55,17 +53,11 @@ DEBUG && $app->syslog->addInfo('odpalenie aplikacji', [
 
 
 // konfiguracja sesji
-$sessionFactory = new \Aura\Session\SessionFactory;
-$session = $sessionFactory->newInstance($_COOKIE);
+$app->container->singleton('session', function() {
+    $sessionFactory = new \Aura\Session\SessionFactory;
+    return $sessionFactory->newInstance($_COOKIE);
+});
 
-// dołożyć komentarze
-// dużo komentarzy
-
-
-
-
-
-$segment = $session->getSegment('pierwszySegment');
 
 $app
     ->get(              // metoda http (get, post, put, delete, option)
@@ -73,18 +65,7 @@ $app
     function ($name) { // funkcja + argumenty
         echo "Hello, $name"; // obsługa żądania
     }
-)->name('hello');
-
-var_dump($app->urlFor('hello', ['name' => 'ala']));
-
-
-$app->get('/wiek/:name/:age', function ($name, $age) {
-    echo "$name ma $age lat";
-});
-
-$app->get('/artykul/:tytul-:id(/:strona)', function () {
-    var_dump(func_get_args());
-});
+)->name('hello'); // nazwa naszej drogi ;-)
 
 
 $app->run();
