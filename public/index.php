@@ -58,31 +58,102 @@ $app->container->singleton('session', function() {
     return $sessionFactory->newInstance($_COOKIE);
 });
 
+// stworzenie obiektu odpowiedzialnego za połączenie z BD
+$app->container->singleton('pdo', function() {
+    // położenie pliku konfiguracyjnego (dynamicznie tworzona nazwa)
+    $fileName = 'config/db.' . (getenv('APP_ENV') ?: 'default') . '.php';
 
-$app
-    ->get(              // metoda http (get, post, put, delete, option)
-    '/hello/:name',     // wzorzec adresu
-    function ($name) { // funkcja + argumenty
-        echo "Hello, $name"; // obsługa żądania
+    // koniecznie sprawdzamy, czy istnieje!
+    if (!file_exists($fileName)) {
+        throw new Exception('no db config file!');
     }
-)->name('hello'); // nazwa naszej drogi ;-)
 
+    // wczytanie tabicy do zmiennej - unikamy przestrzeni globalnej!
+    $dbConfig = include $fileName;
 
-$app->get('/faker', function () {
+    $dsn = sprintf('mysql:host=%s;dbname=%s;port=%d',
+            $dbConfig['host'],
+            $dbConfig['name'],
+            $dbConfig['port']
+    );
+
+    return new \Aura\Sql\ExtendedPdo(
+        $dsn,
+        $dbConfig['user'],
+        $dbConfig['pass'],
+        [
+            \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
+        ]
+    );
+});
+
+// przykład użycia fakera
+$app->get('/faker-simple', function () use ($app) {
     $fakerFactory = new Faker\Factory();
     $generator = $fakerFactory->create('pl_PL');
     
     $users = [];
     for ($i=0; $i<10; ++$i) {
-        $users[] = array(
-            'name' => $generator->name
-        );
+        $users[] = [
+            'user_name' => $generator->firstName,
+            'user_surname' => $generator->lastName,
+            'user_city' => $generator->city,
+            'user_birthdate' => $generator->date('Y-m-d'),
+        ];
     }
-    
+
     var_dump($users);
 });
 
 
+// faker+generowanie zapytań do bazy
+$app->get('/faker-insert', function () use ($app) {
+    $fakerFactory = new Faker\Factory();
+    $generator = $fakerFactory->create('pl_PL');
+    
+    // twórz zapytania dla mysql
+    $queryFactory = new \Aura\SqlQuery\QueryFactory('mysql');
+    // wzorzec dla zapytań insert
+    $insert = $queryFactory->newInsert();
+    // szczegóły zapytania
+    $insert
+        ->into('user')
+        ->cols(['user_name', 'user_surname', 'user_city', 'user_birthdate']);
+    
+    // przygotuj zapytanie
+    $insertStatement = $app->pdo->prepare($insert->__toString());
+        
+    for ($i=0; $i<10; ++$i) {
+        // dane
+        $user = [
+            'user_name' => $generator->firstName,
+            'user_surname' => $generator->lastName,
+            'user_city' => $generator->city,
+            'user_birthdate' => $generator->date('Y-m-d'),
+        ];
+        
+        // wykonaj przygotowane zapytanie dla podanych danych
+        $insertStatement->execute($user);
+    }
+    
+    print 'ok';
+});
+
+
+// faker+generowanie zapytań do bazy
+$app->get('/faker-saved', function () use ($app) {
+    // twórz zapytania dla mysql
+    $queryFactory = new \Aura\SqlQuery\QueryFactory('mysql');
+    // wyświetl
+    $select = $queryFactory->newSelect();
+    $select
+        ->cols(['*'])
+        ->from('user');
+
+    $rows = $app->pdo->fetchAssoc($select->__toString());
+    
+    var_dump($rows);
+});
 
 $app->run();
 
