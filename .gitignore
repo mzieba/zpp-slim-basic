@@ -1,0 +1,8 @@
+/nbproject
+/tmp
+/vendor
+/composer.lock
+/logs/*
+!/logs/.gitkeep
+/config/*
+!/config/db.default.php

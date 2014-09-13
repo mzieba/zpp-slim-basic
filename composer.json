@@ -1,0 +1,10 @@
+{
+    "require": {
+        "slim/slim": "2.*",
+        "monolog/monolog": "1.*",
+        "aura/sql": "2.1.*",
+        "aura/sqlquery": "2.1.*",
+        "aura/session": "2.0.0-beta1",
+        "fzaninotto/faker": "1.*"
+    }
+}
