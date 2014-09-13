@@ -87,6 +87,12 @@ $app->container->singleton('pdo', function() {
     );
 });
 
+// konfiguracja queryFactory
+$app->container->singleton('query', function() use ($app) {
+    return new \ZPP\Aura\SqlQuery\QueryFactory('mysql', $app->pdo);
+});
+
+
 // przykład użycia fakera
 $app->get('/faker-simple', function () use ($app) {
     $fakerFactory = new Faker\Factory();
@@ -139,6 +145,31 @@ $app->get('/faker-insert', function () use ($app) {
     print 'ok';
 });
 
+// faker+generowanie zapytań do bazy
+$app->get('/faker-insert-improved', function () use ($app) {
+    $fakerFactory = new Faker\Factory();
+    $generator = $fakerFactory->create('pl_PL');
+    
+    $insert = $app->query->newInsert();
+    $insert
+        ->into('user');
+    
+    for ($i=0; $i<10; ++$i) {
+        // dane
+        $user = [
+            'user_name' => $generator->firstName,
+            'user_surname' => $generator->lastName,
+            'user_city' => $generator->city,
+            'user_birthdate' => $generator->date('Y-m-d'),
+        ];
+        
+        // wykonaj przygotowane zapytanie dla podanych danych
+        $insert->bindValues($user)->execute();
+    }
+    
+    print 'ok';
+});
+
 
 // faker+generowanie zapytań do bazy
 $app->get('/faker-saved', function () use ($app) {
@@ -154,6 +185,17 @@ $app->get('/faker-saved', function () use ($app) {
     
     var_dump($rows);
 });
+
+// faker+generowanie zapytań do bazy
+$app->get('/faker-saved-improved', function () use ($app) {
+    $select = $app->query->newSelect();
+
+    $rows = $select->from('user')->fetchAssoc();
+    
+    var_dump($rows);
+});
+
+
 
 $app->run();
 
