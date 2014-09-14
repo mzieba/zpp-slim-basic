@@ -96,9 +96,7 @@ $app->get('/faker-insert-improved', function () use ($app) {
     $fakerFactory = new Faker\Factory();
     $generator = $fakerFactory->create('pl_PL');
     
-    $insert = $app->query->newInsert();
-    $insert
-        ->into('user');
+    $insert = $app->query->newInsert('user');
     
     for ($i=0; $i<10; ++$i) {
         // dane
@@ -110,7 +108,8 @@ $app->get('/faker-insert-improved', function () use ($app) {
         ];
         
         // wykonaj przygotowane zapytanie dla podanych danych
-        $insert->bindValues($user)->execute();
+        $id = $insert->bindValues($user)->execute();
+        print 'Dodano rekord o user_id = ' . $id . '<br>';
     }
     
     print 'ok';
