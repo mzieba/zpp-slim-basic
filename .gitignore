@@ -7,3 +7,4 @@
 /config/db.*
 !/config/db.default.php
 /.htaccess
+/public/assets/vendor
