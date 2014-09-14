@@ -25,6 +25,7 @@ $app = new \Slim\Slim([
     'templates.path' => 'src/views',
     'debug' => true
 ]);
+$app->view(new \ZPP\View\SlimExtended());
 
 // konfigurację logów
 include 'config/bootstrap.logs.php';
