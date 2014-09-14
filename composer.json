@@ -14,7 +14,7 @@
         }
     },
     "scripts": {
-        "post-install-cmd": "ZPP\\ComposerEvents::postInstall",
-        "post-update-cmd": "ZPP\\ComposerEvents::postUpdate"
+        "post-install-cmd": "ZPP\\Application\\Setup\\ComposerEvents::postInstall",
+        "post-update-cmd": "ZPP\\Application\\Setup\\ComposerEvents::postUpdate"
     }
 }
