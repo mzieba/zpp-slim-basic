@@ -4,28 +4,23 @@ namespace ZPP\Application\Controller;
 
 class Index extends \ZPP\Application\Controller\Controller
 {
+    /**
+     * obsługa /
+     */
     public function index() {
-        $app = $this->getApp();
-
-        $pageContent = $app->view()->fetch('index/index.phtml', [
+        $this->render('index/index.phtml', [
             'ip' => $_SERVER['REMOTE_ADDR']
-        ]);
-    
-        $app->render('common/layout.phtml', [
-            'content' => $pageContent
         ]);
     }
 
+    /**
+     * obsługa /hello/:name
+     * @param string $name
+     */
     public function hello($name) {
-        $app = $this->getApp();
-
-        $pageContent = $app->view()->fetch('index/index.phtml', [
+        $this->render('index/index.phtml', [
             'name' => $name,
             'ip' => $_SERVER['REMOTE_ADDR']
-        ]);
-    
-        $app->render('common/layout.phtml', [
-            'content' => $pageContent
         ]);
     }
 }
