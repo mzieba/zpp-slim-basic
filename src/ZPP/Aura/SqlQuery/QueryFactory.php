@@ -31,4 +31,15 @@ class QueryFactory extends \Aura\SqlQuery\QueryFactory
         $obj->setPdo($this->pdo);
         return $obj;
     }
+    
+    /**
+     * Returns a new INSERT object.
+     * @param string $tableName
+     * @return Common\InsertInterface
+     */
+    public function newInsert($tableName)
+    {
+        $insert = parent::newInsert();
+        return $insert->into($tableName);
+    }
 }
