@@ -131,13 +131,9 @@ $app->get('/faker-saved', function () use ($app) {
     var_dump($rows);
 });
 
-// faker+generowanie zapytań do bazy
+// wersja maksymalnie uproszczona
 $app->get('/faker-saved-improved', function () use ($app) {
-    $select = $app->query->newSelect();
-
-    $rows = $select->from('user')->fetchAssoc();
-    
-    var_dump($rows);
+    var_dump($app->query->newSelect('user')->fetchAssoc());
 });
 
 
