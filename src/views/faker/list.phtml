@@ -1,6 +1,8 @@
+<?php $this->extend('common/layout.phtml') ?>
+
 <h1>Lista</h1>
 
-<table border="1">
+<table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
             <th>Imię</th>
@@ -19,13 +21,15 @@
     </tbody>
 </table>
 
-<ul>
+<ul class="pagination">
     <?php if (1 < $page) : ?>
-    <li><a href="<?= $pagePrev ?>">Wstecz</li>
+    <li><a href="<?= $pagePrev ?>">Wstecz</a></li>
+    <?php else: ?>
+    <li class="disabled"><a>Wstecz</a></li>
     <?php endif; ?>
 
-    <li><?= $page ?></li>
+    <li class="disabled"><a><?= $page ?></a></li>
 
-    <li><a href="<?= $pageNext ?>">Dalej</li>
+    <li><a href="<?= $pageNext ?>">Dalej</a></li>
 </ul>
     
