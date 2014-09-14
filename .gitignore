@@ -4,5 +4,5 @@
 /composer.lock
 /logs/*
 !/logs/.gitkeep
-/config/*
+/config/db.*
 !/config/db.default.php

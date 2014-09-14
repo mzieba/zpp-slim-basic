@@ -20,30 +20,12 @@ include 'vendor/autoload.php';
 // tworzymy obiekt naszej aplikacji
 $app = new \Slim\Slim();
 
-// konfiguracja logów i monologa
-$app->container->singleton('syslog', function() {
-    $fileName = 'logs/system.log';
-    
-    $logger = new Monolog\Logger('syslog');
-    
-    // zapis do pliku
-    $handler = new Monolog\Handler\RotatingFileHandler($fileName, 14);
+// konfigurację logów
+include 'config/bootstrap.logs.php';
 
-    // dodajemy obsługę skonfigurowanego obiektu
-    $logger->pushHandler($handler);
-    
-    // zwracamy
-    return $logger;
-});
 
-// ...lub trochę krócej
-$app->container->singleton('dblog', function() {
-    return new Monolog\Logger('database', [
-        new Monolog\Handler\RotatingFileHandler(
-            'logs/database.log', 14
-        )
-    ]);
-});
+// sesje i bd
+include 'config/bootstrap.db.php';
 
 // przykład użycia
 // pełny sposób: $monolog = $app->container->get('syslog');
@@ -51,47 +33,9 @@ DEBUG && $app->syslog->addInfo('odpalenie aplikacji', [
     'ip' => $_SERVER['REMOTE_ADDR'],
 ]);
 
-
-// konfiguracja sesji
-$app->container->singleton('session', function() {
-    $sessionFactory = new \Aura\Session\SessionFactory;
-    return $sessionFactory->newInstance($_COOKIE);
+$app->get('/', function () {
+    print 'hello ;-)';
 });
-
-// stworzenie obiektu odpowiedzialnego za połączenie z BD
-$app->container->singleton('pdo', function() {
-    // położenie pliku konfiguracyjnego (dynamicznie tworzona nazwa)
-    $fileName = 'config/db.' . (getenv('APP_ENV') ?: 'default') . '.php';
-
-    // koniecznie sprawdzamy, czy istnieje!
-    if (!file_exists($fileName)) {
-        throw new Exception('no db config file!');
-    }
-
-    // wczytanie tabicy do zmiennej - unikamy przestrzeni globalnej!
-    $dbConfig = include $fileName;
-
-    $dsn = sprintf('mysql:host=%s;dbname=%s;port=%d',
-            $dbConfig['host'],
-            $dbConfig['name'],
-            $dbConfig['port']
-    );
-
-    return new \Aura\Sql\ExtendedPdo(
-        $dsn,
-        $dbConfig['user'],
-        $dbConfig['pass'],
-        [
-            \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
-        ]
-    );
-});
-
-// konfiguracja queryFactory
-$app->container->singleton('query', function() use ($app) {
-    return new \ZPP\Aura\SqlQuery\QueryFactory('mysql', $app->pdo);
-});
-
 
 // przykład użycia fakera
 $app->get('/faker-simple', function () use ($app) {
@@ -141,7 +85,7 @@ $app->get('/faker-insert', function () use ($app) {
         
         // wykonaj przygotowane zapytanie dla podanych danych
         $insertStatement->execute($user);
-        // $id = $app->pdo->lastInsertID();
+        print 'Dodano rekord o user_id = ' . $app->pdo->lastInsertID() . '<br>';
     }
     
     print 'ok';
