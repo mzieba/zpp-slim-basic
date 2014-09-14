@@ -6,3 +6,4 @@
 !/logs/.gitkeep
 /config/db.*
 !/config/db.default.php
+/.htaccess
