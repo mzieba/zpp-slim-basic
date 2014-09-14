@@ -128,6 +128,7 @@ $app->get('/faker-insert', function () use ($app) {
     
     // przygotuj zapytanie
     $insertStatement = $app->pdo->prepare($insert->__toString());
+    // równoznaczne: $insertStatement = $app->pdo->prepare((string) $insert);
         
     for ($i=0; $i<10; ++$i) {
         // dane
@@ -140,6 +141,7 @@ $app->get('/faker-insert', function () use ($app) {
         
         // wykonaj przygotowane zapytanie dla podanych danych
         $insertStatement->execute($user);
+        // $id = $app->pdo->lastInsertID();
     }
     
     print 'ok';
