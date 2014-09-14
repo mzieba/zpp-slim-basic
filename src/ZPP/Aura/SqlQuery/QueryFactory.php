@@ -37,4 +37,24 @@ class QueryFactory extends \Aura\SqlQuery\QueryFactory
         }
         return $insert;
     }
+    
+    /**
+     * Returns a new SELECT object.
+     * @param string $tableName
+     * @param array $cols
+     * @return Common\SelectInterface
+     */
+    public function newSelect($tableName = null, $cols = ['*'])
+    {
+        $select = parent::newSelect();
+
+        if (null !== $tableName) {
+            $select->from($tableName);
+        }
+        if (null !== $cols) {
+            $select->cols($cols);
+        }
+
+        return $select;
+    }
 }
