@@ -37,9 +37,12 @@ class QueryFactory extends \Aura\SqlQuery\QueryFactory
      * @param string $tableName
      * @return Common\InsertInterface
      */
-    public function newInsert($tableName)
+    public function newInsert($tableName = null)
     {
         $insert = parent::newInsert();
-        return $insert->into($tableName);
+        if (null !== $tableName) {
+            $insert->into($tableName);
+        }
+        return $insert;
     }
 }
