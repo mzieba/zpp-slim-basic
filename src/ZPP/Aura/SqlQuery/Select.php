@@ -10,6 +10,7 @@ class Select extends \Aura\SqlQuery\Mysql\Select
         if (!count($this->cols)) {
             $this->cols(['*']);
         }
-        return $this->pdo->fetchAssoc($this->__toString());
+        // wykonanie zapytania
+        return $this->pdo->fetchAssoc($this->__toString(), $this->getBindValues());
     }
 }
