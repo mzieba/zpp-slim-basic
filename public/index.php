@@ -146,8 +146,53 @@ $app->get('/faker-saved', function () use ($app) {
 
 // wersja maksymalnie uproszczona
 $app->get('/faker-saved-improved', function () use ($app) {
-    var_dump($app->query->newSelect('user')->fetchAssoc());
+    $list = $app->view()->fetch('faker/list.phtml', [
+        'users' => $app->query->newSelect('user')->fetchAssoc()
+    ]);
+    
+    $app->render('common/layout.phtml', [
+        'content' => $list
+    ]);
 });
+
+// wersja maksymalnie uproszczona
+$app
+    ->map('/faker-search(/:query(/:page))', function ($query = '', $page = 1) use ($app) {
+        $findByName = $app->request()->params('user_name', '');
+        $list = '';
+        $perPage = 10;
+
+        $form = $app->view()->fetch('faker/search.phtml', [
+            'query' => $query
+        ]);
+
+        // jeżeli formularz został wysłany
+        if ($findByName) {
+            $app->redirect($app->urlFor('faker-search', ['query' => $findByName, 'page' => 1]));
+        } else if ($query) {
+            $users = $app->query
+                ->newSelect('user')
+                ->where('user_name LIKE ?', '%' . $query . '%')
+                ->limit($perPage)
+                ->offset(($page-1) * $perPage);
+            
+            $list = $app->view()->fetch('faker/list.phtml', [
+                'users' => $users->fetchAssoc(),
+                'pagePrev' => $app->urlFor('faker-search', ['query' => $query, 'page' => $page-1]),
+                'pageNext' => $app->urlFor('faker-search', ['query' => $query, 'page' => $page+1]),
+                'page' => $page,
+            ]);
+        }
+
+        $app->render('common/layout.phtml', [
+            'content' => $form . $list
+        ]);
+    })
+    ->via('GET', 'POST')
+    ->conditions([
+        'page' => '\d+',
+    ])
+    ->name('faker-search');
 
 
 
