@@ -5,14 +5,11 @@ namespace ZPP\Application\Controller;
 class Faker extends \ZPP\Application\Controller\Controller
 {
     public function index() {
-        $app = $this->getApp();
+        $segment = $this->getApp()->session->getSegment(__CLASS__);
 
-        $list = $app->view()->fetch('faker/list.phtml', [
-            'users' => $app->query->newSelect('user')->fetchAssoc()
-        ]);
-    
-        $app->render('common/layout.phtml', [
-            'content' => $list
+        $this->render('faker/list.phtml', [
+            'users' => $this->getApp()->query->newSelect('user')->fetchAssoc(),
+            'flashMessage' => $segment->getFlash('info')
         ]);
     }
 
@@ -66,7 +63,8 @@ class Faker extends \ZPP\Application\Controller\Controller
         $generator = $fakerFactory->create('pl_PL');
 
         $insert = $app->query->newInsert('user');
-
+        
+        $added = 0;
         for ($i=0; $i<$numberToAdd; ++$i) {
             $user = [
                 'user_name' => $generator->firstName,
@@ -76,12 +74,12 @@ class Faker extends \ZPP\Application\Controller\Controller
             ];
 
             // wykonaj przygotowane zapytanie dla podanych danych
-            $id = $insert->bindValues($user)->execute();
-
-            print 'Dodano rekord o user_id = ' . $id . '<br>';
+            $added += $insert->bindValues($user)->execute() ? 1 : 0;
         }
 
-        print 'ok';
+        $segment = $app->session->getSegment(__CLASS__);
+        $segment->setFlash('info', 'Dodano ' . $added . ' nowych wpisów.');
+        $app->redirect($app->urlFor('faker'));
     }
     
     public function search($query = '', $page = 1) {
