@@ -32,4 +32,12 @@ class SlimExtended extends \Slim\View
     public function extendKey() {
         return 'content';
     }
+    
+    
+    /**
+     * @return \Slim\Slim
+     */
+    public function app() {
+        return \Slim\Slim::getInstance();
+    }
 }
