@@ -38,5 +38,7 @@ $app->container->singleton('pdo', function() {
 
 // konfiguracja queryFactory
 $app->container->singleton('query', function() use ($app) {
-    return new \ZPP\Aura\SqlQuery\QueryFactory('mysql', $app->pdo);
+    $queryFactory = new \ZPP\Aura\SqlQuery\QueryFactory('mysql');
+    $queryFactory->setPdo($app->pdo);
+    return $queryFactory;
 });
