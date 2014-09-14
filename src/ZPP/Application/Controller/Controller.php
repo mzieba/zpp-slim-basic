@@ -19,4 +19,33 @@ class Controller
         }
         return $this->app;
     }
+    
+    /**
+     * 
+     * @param string $template
+     * @param array $data
+     * @return string
+     */
+    public function render($template, array $data = null, $status = null) {
+        $app = $this->getApp();
+        
+        if (null !== $data) {
+            $app->view()->appendData($data);
+        }
+        
+        if (null !== $status) {
+            $app->response()->status($status);
+        }
+
+        $content = $app->view()->fetch($template);
+        
+        if ($app->view()->extend()) {
+            $app->view()->appendData([
+                'content' => $content
+            ]);
+            $content = $app->view()->fetch($app->view()->extend());
+        }
+
+        echo $content;
+    }
 }
