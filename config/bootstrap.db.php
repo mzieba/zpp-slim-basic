@@ -10,7 +10,7 @@ $app->container->singleton('session', function() {
 // stworzenie obiektu odpowiedzialnego za połączenie z BD
 $app->container->singleton('pdo', function() {
     // położenie pliku konfiguracyjnego (dynamicznie tworzona nazwa)
-    $fileName = 'config/db.' . (getenv('APP_ENV') ?: 'default') . '.php';
+    $fileName = 'config/db.' . (getenv('APP_ENV') ?: 'local') . '.php';
 
     // koniecznie sprawdzamy, czy istnieje!
     if (!file_exists($fileName)) {
