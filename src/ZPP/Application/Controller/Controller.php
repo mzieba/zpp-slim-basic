@@ -10,6 +10,16 @@ class Controller
     protected $app = null;
 
     /**
+     * sprawdzamy, czy widok jest odpowiedniego typu
+     */
+    public function __construct() {
+        if (!($this->getApp()->view() instanceof \ZPP\View\SlimExtended)) {
+            throw new Exception('Widok musi być typu \ZPP\View\SlimExtended');
+        }
+    }
+
+
+    /**
      * 
      * @return \Slim\Slim
      */
@@ -41,7 +51,7 @@ class Controller
         
         if ($app->view()->extend()) {
             $app->view()->appendData([
-                'content' => $content
+                $app->view()->extendKey() => $content
             ]);
             $content = $app->view()->fetch($app->view()->extend());
         }
