@@ -4,15 +4,7 @@ namespace ZPP\Aura\SqlQuery;
 
 class QueryFactory extends \Aura\SqlQuery\QueryFactory
 {
-    /**
-     * @var \Aura\Sql\ExtendedPDO
-     */
-    protected $pdo;
-
-    public function __construct($db, \Aura\Sql\ExtendedPDO $pdo) {
-        parent::__construct($db);
-        $this->pdo = $pdo;
-    }
+    use PdoTrait;
     
     /**
      * Returns a new query object.
