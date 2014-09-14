@@ -18,7 +18,9 @@ define('DEBUG', 'local' === getenv('APP_ENV'));
 include 'vendor/autoload.php';
 
 // tworzymy obiekt naszej aplikacji
-$app = new \Slim\Slim();
+$app = new \Slim\Slim([
+    'templates.path' => 'src/views'
+]);
 
 // konfigurację logów
 include 'config/bootstrap.logs.php';
@@ -33,8 +35,14 @@ DEBUG && $app->syslog->addInfo('odpalenie aplikacji', [
     'ip' => $_SERVER['REMOTE_ADDR'],
 ]);
 
-$app->get('/', function () {
-    print 'hello ;-)';
+$app->get('/', function () use ($app) {
+    $pageContent = $app->view()->fetch('index/index.phtml', [
+        'ip' => $_SERVER['REMOTE_ADDR']
+    ]);
+    
+    $app->render('common/layout.phtml', [
+        'content' => $pageContent
+    ]);
 });
 
 // przykład użycia fakera
@@ -124,9 +132,14 @@ $app->get('/faker-saved', function () use ($app) {
     $select = $queryFactory->newSelect();
     $select
         ->cols(['*'])
-        ->from('user');
+        ->from('user')
+        ->where('user_name LIKE ? AND user_name LIKE ?', 'W%', '%a');
 
-    $rows = $app->pdo->fetchAssoc($select->__toString());
+        //->where('user_name LIKE :name_begins')
+        //->where('user_name LIKE :name_ends')
+        //->bindValues(['name_begins' => 'W%', 'name_ends' => '%a']);
+    
+    $rows = $app->pdo->fetchAssoc($select->__toString(), $select->getBindValues());
     
     var_dump($rows);
 });
