@@ -5,11 +5,16 @@
         "aura/sql": "2.1.*",
         "aura/sqlquery": "2.1.*",
         "aura/session": "2.0.0-beta1",
-        "fzaninotto/faker": "1.*"
+        "fzaninotto/faker": "1.*",
+        "beelab/bowerphp": "1.0.*@dev"
     },
     "autoload": {
         "psr-4": {
             "ZPP\\": "src/ZPP/"
         }
+    },
+    "scripts": {
+        "post-install-cmd": "ZPP\\ComposerEvents::postInstall",
+        "post-update-cmd": "ZPP\\ComposerEvents::postUpdate"
     }
 }
