@@ -1,22 +1,11 @@
-<?php 
-/*
-$viewData = [
-    'ip' => $_SERVER['REMOTE_ADDR']
-]
-extract($viewData);
-ob_start();
-*/
-?>
+<?php $this->extend('common/layout.phtml') ?>
 
+<?php if ($name) : ?>
+<h1>Hello, <?= $name ?>!</h1>
+<?php else : ?>
 <h1>Hello!</h1>
+<?php endif; ?>
 
 <p>
-    Twoje IP to <?=$ip;?>
+    Twoje IP to <strong><?= $ip ?></strong>
 </p>
-
-<?php
-
-/*
-$response = ob_end_clean();
-*/
-?>
