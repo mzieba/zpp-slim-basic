@@ -44,10 +44,10 @@ class Application
         \Slim\Slim::getInstance()->container->singleton('syslog', function() {
             $fileName = 'logs/system.log';
 
-            $logger = new Monolog\Logger('syslog');
+            $logger = new \Monolog\Logger('syslog');
 
             // zapis do pliku
-            $handler = new Monolog\Handler\RotatingFileHandler($fileName, 14);
+            $handler = new \Monolog\Handler\RotatingFileHandler($fileName, 14);
 
             // dodajemy obsługę skonfigurowanego obiektu
             $logger->pushHandler($handler);
@@ -58,8 +58,8 @@ class Application
 
         // ...lub trochę krócej
         \Slim\Slim::getInstance()->container->singleton('dblog', function() {
-            return new Monolog\Logger('database', [
-                new Monolog\Handler\RotatingFileHandler(
+            return new \Monolog\Logger('database', [
+                new \Monolog\Handler\RotatingFileHandler(
                     'logs/database.log', 14
                 )
             ]);
@@ -84,7 +84,7 @@ class Application
 
             // koniecznie sprawdzamy, czy istnieje!
             if (!file_exists($fileName)) {
-                throw new Exception('no db config file!');
+                throw new \Exception('no db config file!');
             }
 
             // wczytanie tabicy do zmiennej - unikamy przestrzeni globalnej!
